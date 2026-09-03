@@ -1,0 +1,59 @@
+import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter/services.dart';
+
+void main() {
+  // ✅ Barre d'état normale (pas de mode immersif)
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  runApp(const ComPlusApp());
+}
+
+class ComPlusApp extends StatelessWidget {
+  const ComPlusApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: NaturePlusWebView(),
+    );
+  }
+}
+
+class NaturePlusWebView extends StatefulWidget {
+  const NaturePlusWebView({super.key});
+
+  @override
+  State<NaturePlusWebView> createState() => _NaturePlusWebViewState();
+}
+
+class _NaturePlusWebViewState extends State<NaturePlusWebView> {
+  late final WebViewController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse('https://nature-plus-client.onrender.com'));
+  }
+
+  // ✅ Gestion de la touche Retour + barre d'état normale
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        final canGoBack = await controller.canGoBack();
+        if (canGoBack) {
+          controller.goBack();
+          return false;
+        }
+        return true;
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: WebViewWidget(controller: controller),
+        ),
+      ),
+    );
+  }
+}
