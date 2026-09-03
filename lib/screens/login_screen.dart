@@ -28,6 +28,9 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    // ✅ Afficher les identifiants saisis dans la console
+    print('🔐 Tentative de connexion avec email: $email');
+
     setState(() {
       _isLoading = true;
       _errorMessage = '';
